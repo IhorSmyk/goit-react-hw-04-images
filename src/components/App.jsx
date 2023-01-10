@@ -5,9 +5,8 @@ import { getPictures } from 'services/pictures.service';
 import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Button from './Button/Button';
-import Loader from './Loader/Loader';
+import { Loader } from './Loader/Loader';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-
 
 export const APP_STATE = {
   pictures: [],
@@ -16,7 +15,6 @@ export const APP_STATE = {
   totalHits: FETCH_STATUS.Empty,
   status: FETCH_STATUS.Empty,
 };
-
 
 class App extends Component {
   state = {

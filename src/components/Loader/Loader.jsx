@@ -1,7 +1,7 @@
 import { ColorRing } from 'react-loader-spinner';
 import s from './Loader.module.css';
 
-const Loader = () => {
+export const Loader = () => {
   return (
     <div className={s.overlay}>
       <ColorRing
@@ -16,4 +16,3 @@ const Loader = () => {
   );
 };
 
-export default Loader;
