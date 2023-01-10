@@ -1,5 +1,4 @@
 import { Component } from 'react';
-// import { APP_STATE } from '../constants/appState';
 import { FETCH_STATUS } from '../constants/fetchStatus';
 import { getPictures } from 'services/pictures.service';
 import Searchbar from './Searchbar/Searchbar';
@@ -8,7 +7,7 @@ import Button from './Button/Button';
 import { Loader } from './Loader/Loader';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
-export const APP_STATE = {
+const APP_STATE = {
   pictures: [],
   request: '',
   page: 1,
