@@ -11,7 +11,7 @@ export const App = () => {
   const [pictures, setPictures] = useState([]);
   const [request, setRequest] = useState('');
   const [page, setPage] = useState(1);
-  const [totalHits, setTotalHits] = useState(FETCH_STATUS.Empty);
+  const [totalHits, setTotalHits] = useState(0);
   const [status, setStatus] = useState(FETCH_STATUS.Empty);
 
   const prepareMakeRequest = word => {
