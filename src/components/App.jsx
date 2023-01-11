@@ -14,7 +14,6 @@ export const App = () => {
   const [totalHits, setTotalHits] = useState(FETCH_STATUS.Empty);
   const [status, setStatus] = useState(FETCH_STATUS.Empty);
 
-  //prepare to make request
   const prepareMakeRequest = word => {
     setPictures([]);
     setRequest(word.toLowerCase().trim());
@@ -24,23 +23,10 @@ export const App = () => {
   };
 
   useEffect(() => {
-    makeRequest();
-  }, [request, page]);
-
-  // const componentDidUpdate = (_, prevState) => {
-  //   makeRequest(prevState);
-  // };
-
-  const setRequestWord = word => {
-    if (word === '') {
-      Notify.info('The input field is empty!');
-    } else if (word !== request) {
-      prepareMakeRequest(word);
+    if (!request) {
+      return;
     }
-  };
-
-  const makeRequest = async () => {
-    // if (prevState.request !== request || prevState.page !== page) {
+    const makeRequest = async () => {
       setStatus(FETCH_STATUS.Loading);
       try {
         const receivedPictures = await getPictures(request, page);
@@ -55,15 +41,23 @@ export const App = () => {
             return { id, webformatURL, largeImageURL, tags };
           }
         );
-        setPictures(prevPictures => ({
-          pictures: [...prevPictures, ...pictures],
-        }));
+        setPictures(prevPictures => [].concat(prevPictures, pictures));
         setStatus(FETCH_STATUS.Success);
       } catch (error) {
         setStatus(FETCH_STATUS.Error);
         console.log(error.message);
         Notify.failure('Something went wrong!');
       }
+    };
+
+    makeRequest();
+  }, [request, page]);
+
+  const setRequestWord = word => {
+    if (word === '') {
+      Notify.info('The input field is empty!');
+    } else if (word !== request) {
+      prepareMakeRequest(word);
     }
   };
 
