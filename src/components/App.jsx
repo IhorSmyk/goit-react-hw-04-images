@@ -1,52 +1,53 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { FETCH_STATUS } from '../constants/fetchStatus';
 import { getPictures } from 'services/pictures.service';
-import Searchbar from './Searchbar/Searchbar';
+import { Searchbar } from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Button from './Button/Button';
 import { Loader } from './Loader/Loader';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
-const APP_STATE = {
-  pictures: [],
-  request: '',
-  page: 1,
-  totalHits: FETCH_STATUS.Empty,
-  status: FETCH_STATUS.Empty,
-};
+export const App = () => {
+  const [pictures, setPictures] = useState([]);
+  const [request, setRequest] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalHits, setTotalHits] = useState(FETCH_STATUS.Empty);
+  const [status, setStatus] = useState(FETCH_STATUS.Empty);
 
-class App extends Component {
-  state = {
-    ...APP_STATE,
+  //prepare to make request
+  const prepareMakeRequest = word => {
+    setPictures([]);
+    setRequest(word.toLowerCase().trim());
+    setPage(1);
+    setTotalHits(FETCH_STATUS.Empty);
+    setStatus(FETCH_STATUS.Empty);
   };
 
-  componentDidUpdate = (_, prevState) => {
-    this.makeRequest(prevState);
-  };
+  useEffect(() => {
+    makeRequest();
+  }, [request, page]);
 
-  setRequest = word => {
+  // const componentDidUpdate = (_, prevState) => {
+  //   makeRequest(prevState);
+  // };
+
+  const setRequestWord = word => {
     if (word === '') {
       Notify.info('The input field is empty!');
-    } else if (word !== this.state.request) {
-      this.setState({ ...APP_STATE, request: word.toLowerCase().trim() });
+    } else if (word !== request) {
+      prepareMakeRequest(word);
     }
   };
 
-  makeRequest = async prevState => {
-    if (
-      prevState.request !== this.state.request ||
-      prevState.page !== this.state.page
-    ) {
-      this.setState({ status: FETCH_STATUS.Loading });
+  const makeRequest = async () => {
+    // if (prevState.request !== request || prevState.page !== page) {
+      setStatus(FETCH_STATUS.Loading);
       try {
-        const receivedPictures = await getPictures(
-          this.state.request,
-          this.state.page
-        );
-        this.setState({ totalHits: receivedPictures.totalHits });
+        const receivedPictures = await getPictures(request, page);
+        setTotalHits(receivedPictures.totalHits);
 
         if (receivedPictures.totalHits === 0) {
-          Notify.warning(`No results for ${this.state.request}`);
+          Notify.warning(`No results for ${request}`);
         }
         //copy only the required properties
         const pictures = receivedPictures.hits.map(
@@ -54,37 +55,31 @@ class App extends Component {
             return { id, webformatURL, largeImageURL, tags };
           }
         );
-        this.setState(prev => ({
-          pictures: [...prev.pictures, ...pictures],
-          status: FETCH_STATUS.Success,
+        setPictures(prevPictures => ({
+          pictures: [...prevPictures, ...pictures],
         }));
+        setStatus(FETCH_STATUS.Success);
       } catch (error) {
-        this.setState({ status: FETCH_STATUS.Error });
+        setStatus(FETCH_STATUS.Error);
         console.log(error.message);
         Notify.failure('Something went wrong!');
       }
     }
   };
 
-  handleChangePage = () => {
-    this.setState(prev => ({ page: prev.page + 1 }));
+  const handleChangePage = () => {
+    setPage(prevPage => prevPage + 1);
   };
 
-  render() {
-    return (
-      <>
-        <Searchbar search={this.setRequest} />
+  return (
+    <>
+      <Searchbar search={setRequestWord} />
 
-        {this.state.status === FETCH_STATUS.Loading && <Loader />}
+      {status === FETCH_STATUS.Loading && <Loader />}
 
-        <ImageGallery imageList={this.state.pictures} />
+      <ImageGallery imageList={pictures} />
 
-        {this.state.pictures.length < this.state.totalHits && (
-          <Button loadMore={this.handleChangePage} />
-        )}
-      </>
-    );
-  }
-}
-
-export default App;
+      {pictures.length < totalHits && <Button loadMore={handleChangePage} />}
+    </>
+  );
+};
