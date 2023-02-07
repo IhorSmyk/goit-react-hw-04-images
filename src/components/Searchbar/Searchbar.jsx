@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import s from './Searchbar.module.css';
 import { CgSearch } from 'react-icons/cg';
+import s from './Searchbar.module.css';
 
 export const Searchbar = ({ search }) => {
   const [searchWord, setSearchWord] = useState('');

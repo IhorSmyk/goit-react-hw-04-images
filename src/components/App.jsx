@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import { FETCH_STATUS } from '../constants/fetchStatus';
 import { getPictures } from 'services/pictures.service';
 import { Searchbar } from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Button from './Button/Button';
 import { Loader } from './Loader/Loader';
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 export const App = () => {
   const [pictures, setPictures] = useState([]);
@@ -68,11 +68,8 @@ export const App = () => {
   return (
     <>
       <Searchbar search={setRequestWord} />
-
       {status === FETCH_STATUS.Loading && <Loader />}
-
       <ImageGallery imageList={pictures} />
-
       {pictures.length < totalHits && <Button loadMore={handleChangePage} />}
     </>
   );
